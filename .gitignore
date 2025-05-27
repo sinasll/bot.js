@@ -1,0 +1,20 @@
+# Ignore Node.js dependencies
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore .env file with sensitive environment variables
+.env
+
+# Ignore build directories
+build/
+dist/
+
+# Ignore IDE/editor specific folders
+.vscode/
+.idea/
+
+# Ignore system files (macOS/Windows)
+.DS_Store
+Thumbs.db
