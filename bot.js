@@ -1,55 +1,63 @@
-require('dotenv').config(); // Load environment variables from .env
+require('dotenv').config();
 
-const { Telegraf } = require('telegraf');
 const express = require('express');
+const { Telegraf } = require('telegraf');
+
 const app = express();
-
-// Health-check endpoint so that Render can detect an open port
-app.get('/', (req, res) => {
-  res.send('PipCore Bot is up and running!');
-});
-
-// Initialize the Telegraf bot using the BOT_TOKEN from the environment variables
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-// Command handler for /start that sends a photo with a caption
+// Optional: error catching
+bot.catch((err, ctx) => {
+  console.error('🚨 Bot error:', err);
+});
+
+// /start command
 bot.start((ctx) => {
-  console.log(`New user: ${ctx.from.username || ctx.from.first_name}`);
+  console.log(`📩 /start by ${ctx.from.username || ctx.from.first_name}`);
   ctx.replyWithPhoto(
     { source: './PipCore.png' },
     {
       caption:
-        'Welcome to the *PipCore*\n\n' +
-        'first trading journal mini app on *Telegram*\\!\n\n' +
-        '*you belong to us*\\,\n\n' +
-        'track\\, analyze\\, and improve your trading with *PipCore*\\, the essential tool for refining your strategy and making informed decisions\\.\n\n' +
+        'Welcome to the *PipCore*\\!\n\n' +
+        'The first trading journal mini app on *Telegram*\\.\n\n' +
+        '*You belong to us*\\,\n\n' +
+        'Track\\, analyze\\, and improve your trading with *PipCore*\\, the essential tool for refining your strategy and making informed decisions\\.\n\n' +
         '*PipCore* — _a place you can call the home of your trades_',
       parse_mode: 'MarkdownV2'
     }
   );
 });
 
-// Log all incoming messages for debugging
+// Log all messages (optional)
 bot.on('message', (ctx) => {
-  console.log(`Received message: ${ctx.message.text}`);
+  console.log(`📨 Message from ${ctx.from.username || ctx.from.first_name}: ${ctx.message.text}`);
 });
 
-// Set up the Express server to handle webhook callbacks on the /webhook endpoint
+// Webhook route
 app.use(bot.webhookCallback('/webhook'));
 
-// Set the webhook URL using the WEBHOOK_URL from .env
-bot.telegram.setWebhook(process.env.WEBHOOK_URL)
-  .then(() => {
-    console.log('Webhook was set successfully.');
-  })
-  .catch((err) => {
-    console.error('Error setting webhook:', err);
-  });
-
-// Listen on the port provided by Render, or fallback to 3000
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+// Raw body logging (optional debug)
+app.post('/webhook', express.json(), (req, res, next) => {
+  console.log('✅ Webhook received:', req.body);
+  next();
 });
 
-console.log('PipCore Bot is running...');
+// Set webhook once
+bot.telegram.setWebhook(`${process.env.WEBHOOK_URL}/webhook`)
+  .then(() => {
+    console.log('✅ Webhook set to:', `${process.env.WEBHOOK_URL}/webhook`);
+  })
+  .catch((err) => {
+    console.error('❌ Failed to set webhook:', err);
+  });
+
+// Health check route
+app.get('/', (req, res) => {
+  res.send('🚀 PipCore Bot is up and running!');
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🌐 Express server listening on port ${PORT}`);
+});
