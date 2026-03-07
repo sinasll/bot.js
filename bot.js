@@ -17,7 +17,7 @@ const app = express();
 bot.start((ctx) => {
   console.log(`📩 /start from ${ctx.from.first_name}`);
   // Professional Badini greeting for FundKurd
-  ctx.reply("👋 بخێرهاتی بۆ FundKurd! بۆ دەستپێکرنا خزمەتگوزاریێن مە و ڤەکرنا پلاتفۆرمێ، هیڤییە دوگما ڤەکرن کلیک بکە!");
+  ctx.reply("👋 بخێرهاتی بۆ دەستپێکرنا خزمەتگوزاریێن مە و ڤەکرنا پلاتفۆرمی، هیڤییە دوگما ڤەکرن کلیک بکە!");
 });
 
 bot.on('message', (ctx) => {
